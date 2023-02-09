@@ -1,0 +1,15 @@
+.col-sm {
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px;
+    margin: 20px;
+    text-align: center;
+}
+
+.row {
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px;
+    text-align: center;
+}
+
