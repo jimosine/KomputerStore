@@ -3,8 +3,6 @@
 //displayText function schrijven die je aanroept bij het einde van elke functie
 //GOED CHECKEN OF JE SALARIS STORTEN/LENING AFLOSSEN GOED GAAT
 //NUMBER FORMATTING
-//CHECKING FOR VALUE TYPE WITH INPUT
-//BUY NOW KNOP
 
 //Get elements and set variables
 const balanceText = document.getElementById("balance-text")
@@ -23,7 +21,6 @@ let price = 0
 let balance = 100
 let salary = 0
 let currentLoan = 0
-let loanFlag = false
 
 //laptop selection dingen
 const laptopSelection = document.getElementById("laptop-select")
@@ -48,9 +45,9 @@ repayButton.remove()
 
 //Functions
 function getLoan() {
-    loanAmount = window.prompt("how much?")
+    loanAmount = window.prompt("How much?")
+
     if (validLoan() == true) {
-        loanFlag = true
         currentLoan = +currentLoan + +loanAmount
         balance = +balance + +loanAmount//using unary operator + to convert to number
         balanceText.innerText = "Balance: " + balance + " Kr"
@@ -64,9 +61,14 @@ function validLoan() {
     if (currentLoan > 0) {
         console.log("you already have a loan")
         return false
+    }
+    else if (Math.sign(loanAmount) !== 1 | isNaN(loanAmount)) {
+        loanText.innerText = "Please input a valid positive number"
+        return false
     } else if (loanAmount > balance * 2) {
         loanText.innerText = "You can't withdraw this much"
         console.log("too much")
+        console.log(loanAmount);
         return false
     } else {
         return true
@@ -80,18 +82,28 @@ function getSalary() {
 
 function depositSalary() {
     if (currentLoan > 0) {
-        balance = +balance + (0.9 * +salary)
-        currentLoan = +currentLoan - (0.1 * +salary)
-
+        //check if we are over depositing
+        if (+currentLoan - (0.1 * +salary) < 0) {
+            console.log((+currentLoan - (0.1 * +salary)))
+            balance = +balance + +salary - +currentLoan
+            currentLoan = 0
+            //otherwise normal depoist
+        } else {
+            balance = +balance + (0.9 * +salary)
+            currentLoan = +currentLoan - (0.1 * +salary)
+        }
+        //if no loan, just deposit
     } else {
         balance = +balance + +salary
     }
-
+    //salary = 0 again after depositing
     salary = 0
 
+    //render page
     workText.innerText = "Pay: " + salary + " Kr"
     balanceText.innerText = "Balance: " + balance + " Kr"
     loanText.innerText = "Currently have " + currentLoan + " Kr outstanding."
+    //render for the loan button
     checkLoan()
 }
 
@@ -110,8 +122,18 @@ function checkLoan() {
 }
 
 function repayLoan() {
-    currentLoan = +currentLoan - +salary
 
+
+    //get what you store as balance
+    const extraMoney = +salary - +currentLoan
+
+    if (extraMoney > 1) {
+        currentLoan = 0
+        balance += extraMoney
+    }
+    else {
+        currentLoan = +currentLoan - +salary
+    }
     salary = 0
     workText.innerText = "Pay: " + salary + " Kr"
     balanceText.innerText = "Balance: " + balance + " Kr"
@@ -220,7 +242,6 @@ function buyLaptop() {
 function addHide() {
     console.log("test");
     buyButton.classList.remove('hide')
-    //document.getElementById("dismiss-button").classList.add('hide')
     document.getElementById('alert-success').classList.add('hide')
     document.getElementById('alertId').classList.add('hide')
 
