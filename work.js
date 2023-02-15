@@ -1,88 +1,110 @@
-// import utils from "./utils.js"
-// import bank from "./bank.js"
+//IMPORTS
+import utils from "./utils.js"
+import bank from "./bank.js"
 
-// let salary = 0
-// let currentLoan = bank.returnLoanAmount()
-// console.log(currentLoan);
-// let balance = 0//get balance
-// const workText = document.getElementById("work-text")
+//VARIABLES
+let salary = 0
 
-// const workButtonsDiv = document.getElementById("work-buttons")
-// const bankerDiv = document.getElementById("banker-div")
-// const balanceText = document.getElementById("balance-text")
-// const loanText = document.getElementById("loan-text")
-// const bankerButton = document.getElementById("banker-button")
-// const workButton = document.getElementById("work-button")
-// const storeButton = document.getElementById("store-button")
-// const repayButton = document.getElementById("repay-button")
+//HTML ELEMENTS
+const workText = document.getElementById("work-text")
+const bankerDiv = document.getElementById("banker-div")
+const bankerButton = document.getElementById("banker-button")
+const repayButton = document.getElementById("repay-button")
 
-// function getSalary() {
-//     console.log(currentLoan);
-//     salary = +salary + 100
-//     workText.innerText = "Pay: " + utils.formatNumber(salary)
-// }
 
-// function depositSalary() {
-//     if (currentLoan > 0) {
-//         //check if we are over depositing
-//         if (+currentLoan - (0.1 * +salary) < 0) {
-//             console.log((+currentLoan - (0.1 * +salary)))
-//             balance = +balance + +salary - +currentLoan
-//             currentLoan = 0
-//             //otherwise normal depoist
-//         } else {
-//             balance = +balance + (0.9 * +salary)
-//             currentLoan = +currentLoan - (0.1 * +salary)
-//         }
-//         //if no loan, just deposit
-//     } else {
-//         balance = +balance + +salary
-//     }
-//     //salary = 0 again after depositing
-//     salary = 0
+//Function to increase a user's salary by 100 and rerenders the salary 
+//Runs when "work" button is clicked
+function getSalary() {
+    salary = +salary + 100
+    displaySalary()
+}
 
-//     //render page
-//     workText.innerText = "Pay: " + utils.formatNumber(salary)
-//     balanceText.innerText = "Balance: " + utils.formatNumber(balance)
-//     loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
-//     //render for the loan button & repay button
-//     checkLoan()
-// }
+//Function to deposit one's salary into the bank.
+//If there is a loan oustanding, 10% of the salary goes to the loan payment
+//However, if the outstanding loan is smaller than the 10% of the salary, just pay 
+//the outstanding amount and store the rest in the bank balance.
+//Stores the rest of the 90% in the bank balance, or 100% if no loan is oustanding.
+//Resets the salary to 0, and rerenders the corresponding texts
+function depositSalary() {
+    let currentLoan = bank.returnLoanAmount()
+    let balance = bank.getBalance()
+    if (currentLoan > 0) {
+        //check if we are over depositing
+        if (+currentLoan - (0.1 * +salary) < 0) {
+            bank.setBalance(+balance + +salary - +currentLoan)
+            //balance = +balance + +salary - +currentLoan
+            bank.setLoan(0)
+            //otherwise normal depoist
+        } else {
+            bank.setBalance(+balance + (0.9 * +salary))
+            //balance = +balance + (0.9 * +salary)
+            bank.setLoan(+currentLoan - (0.1 * +salary))
+            //currentLoan = +currentLoan - (0.1 * +salary)
+        }
+        //if no loan, just deposit
+    } else {
+        bank.setBalance(+balance + +salary)
+        //balance = +balance + +salary
+    }
+    //salary = 0 again after depositing
+    salary = 0
 
-// //Function that checks if a loan is payed off and renders the page accordingly
-// function checkLoan() {
-//     if (currentLoan <= 0) {
-//         loanText.innerText = " "
-//         bankerDiv.appendChild(bankerButton)
-//         repayButton.remove()
-//     }
-// }
+    //render page
+    displaySalary()
+    bank.displayBalance()
+    bank.displayLoan()
+    //render for the loan button & repay button
+    checkLoan()
+}
 
-// //Function to allow a user to repay a loan instead of banking the salary
-// //If a user is overpaying on the loan, store the rest of the money in the bank balance
-// //Reset the salary, render the page accordingly
-// function repayLoan() {
-//     //get what you store as balance
-//     if (+salary - +currentLoan > 0) {
-//         balance += +salary - +currentLoan
-//         currentLoan = 0
-//     }
-//     else {
-//         currentLoan = +currentLoan - +salary
-//     }
-//     salary = 0
-//     workText.innerText = "Pay: " + utils.formatNumber(salary)
-//     balanceText.innerText = "Balance: " + utils.formatNumber(balance)
-//     loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
-//     checkLoan()
-// }
+//Function that checks if a loan is payed off and renders the page accordingly
+function checkLoan() {
+    let currentLoan = bank.returnLoanAmount()
+    if (currentLoan <= 0) {
+        bank.displayLoan()
+        bankerDiv.appendChild(bankerButton)
+        repayButton.remove()
+    }
+}
 
-// const work = {
-//     getSalary,
-//     depositSalary,
-//     checkLoan,
-//     repayLoan
+//Function to allow a user to repay a loan instead of banking the salary
+//If a user is overpaying on the loan, store the rest of the money in the bank balance
+//Reset the salary, render the page accordingly
+function repayLoan() {
+    let currentLoan = bank.returnLoanAmount()
+    let balance = bank.getBalance()
+    //get what you store as balance
+    if (+salary - +currentLoan > 0) {
+        bank.setBalance(balance + salary - currentLoan)
+        //balance += +salary - +currentLoan
+        bank.setLoan(0)
+        //currentLoan = 0
+    }
+    else {
+        //currentLoan = +currentLoan - +salary
+        bank.setLoan(currentLoan - salary)
+    }
+    salary = 0
+    displaySalary()
+    bank.displayBalance()
+    bank.displayLoan()
+    //loanText.innerText = "Currently have " + utils.formatNumber(bank.returnLoanAmount()) + " outstanding."
+    checkLoan()
+}
 
-// }
+//RENDERS
+const displaySalary = () => {
+    workText.innerText = "Pay: " + utils.formatNumber(salary)
+}
 
-// export default work
+
+const work = {
+    getSalary,
+    depositSalary,
+    checkLoan,
+    repayLoan,
+    displaySalary
+
+}
+
+export default work

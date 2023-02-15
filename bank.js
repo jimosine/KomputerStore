@@ -69,6 +69,15 @@ const displayBalance = () => {
     balanceText.innerText = "Balance: " + utils.formatNumber(balance)
 }
 
+const displayLoan = () => {
+    if (currentLoan > 0) {
+        loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
+    }
+    else {
+        loanText.innerText = " "
+    }
+}
+
 //FUNCTIONS TO EXPORT
 const bank = {
     displayBalance,
@@ -77,7 +86,8 @@ const bank = {
     getLoan,
     validLoan,
     returnLoanAmount,
-    getBalance
+    getBalance,
+    displayLoan
 }
 
 export default bank
