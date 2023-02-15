@@ -1,8 +1,7 @@
 //TO DO:
 
-//displayText function schrijven die je aanroept bij het einde van elke functie
+//render function schrijven die je aanroept bij het einde van elke functie
 //GOED CHECKEN OF JE SALARIS STORTEN/LENING AFLOSSEN GOED GAAT
-//NUMBER FORMATTING
 
 //Get elements and set variables
 const balanceText = document.getElementById("balance-text")
@@ -15,7 +14,6 @@ const storeButton = document.getElementById("store-button")
 const repayButton = document.getElementById("repay-button")
 const buyButton = document.getElementById("buy-button")
 const workButtonsDiv = document.getElementById("work-buttons")
-
 
 let price = 0
 let balance = 100
@@ -34,14 +32,19 @@ const laptopDescription = document.getElementById("laptop-description")
 const imageElement = document.getElementById("laptop-img")
 
 //Change the text for banker accordingly
-balanceText.innerText = "Balance: " + balance + " Kr"
+balanceText.innerText = "Balance: " + formatNumber(balance)
 loanText.innerText = " "
 
 //Change the text for Work accordingly
-workText.innerText = "Pay: " + salary + " Kr"
+workText.innerText = "Pay: " + formatNumber(salary)
 
 //Remove repay button untill we have a loan
 repayButton.remove()
+
+//IN UTIL STOPPEN
+function formatNumber(number) {
+    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number)
+}
 
 //Functions
 function getLoan() {
@@ -50,12 +53,14 @@ function getLoan() {
     if (validLoan() == true) {
         currentLoan = +currentLoan + +loanAmount
         balance = +balance + +loanAmount//using unary operator + to convert to number
-        balanceText.innerText = "Balance: " + balance + " Kr"
-        loanText.innerText = "Currently have " + currentLoan + " Kr outstanding."
+        balanceText.innerText = "Balance: " + formatNumber(balance)
+        loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
         bankerButton.remove()
         workButtonsDiv.appendChild(repayButton)
     }
 }
+
+
 
 function validLoan() {
     if (currentLoan > 0) {
@@ -77,7 +82,7 @@ function validLoan() {
 
 function getSalary() {
     salary = +salary + 100
-    workText.innerText = "Pay: " + salary + " Kr"
+    workText.innerText = "Pay: " + formatNumber(salary)
 }
 
 function depositSalary() {
@@ -100,9 +105,9 @@ function depositSalary() {
     salary = 0
 
     //render page
-    workText.innerText = "Pay: " + salary + " Kr"
-    balanceText.innerText = "Balance: " + balance + " Kr"
-    loanText.innerText = "Currently have " + currentLoan + " Kr outstanding."
+    workText.innerText = "Pay: " + formatNumber(salary)
+    balanceText.innerText = "Balance: " + formatNumber(balance)
+    loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
     //render for the loan button
     checkLoan()
 }
@@ -135,9 +140,9 @@ function repayLoan() {
         currentLoan = +currentLoan - +salary
     }
     salary = 0
-    workText.innerText = "Pay: " + salary + " Kr"
-    balanceText.innerText = "Balance: " + balance + " Kr"
-    loanText.innerText = "Currently have " + currentLoan + " Kr outstanding."
+    workText.innerText = "Pay: " + formatNumber(salary)
+    balanceText.innerText = "Balance: " + formatNumber(balance)
+    loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
     checkLoan()
 }
 
@@ -198,15 +203,14 @@ function renderLaptop(userData) {
     console.log(newUrl)
     imageElement.src = newUrl
     price = userData.price
-    priceText.innerText = userData.price
+    priceText.innerText = formatNumber(userData.price)
 }
 
 //HANDLE CHANGES IN SELECT
 const handleSelectionChange = e => {
     const selectedLaptop = laptops[e.target.selectedIndex]
-    priceText.innerText = selectedLaptop.price
+    priceText.innerText = formatNumber(selectedLaptop.price)
     price = selectedLaptop.price
-    console.log(price);
 
     //clear the ul first
     laptopSpecs.innerHTML = "";
@@ -227,7 +231,7 @@ const handleSelectionChange = e => {
 function buyLaptop() {
     if (balance >= price) {
         balance -= price
-        balanceText.innerText = "Balance: " + balance + " Kr"
+        balanceText.innerText = "Balance: " + formatNumber(balance)
         document.getElementById('alert-success').classList.remove('hide')
         document.getElementById("dismiss-button2").classList.remove('hide')
         buyButton.classList.add('hide')
