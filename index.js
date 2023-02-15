@@ -1,3 +1,7 @@
+import bank from "./bank.js"
+import utils from "./utils.js"
+import work from "./work.js"
+
 //TO DO:
 
 //render function schrijven die je aanroept bij het einde van elke functie
@@ -14,75 +18,33 @@ const storeButton = document.getElementById("store-button")
 const repayButton = document.getElementById("repay-button")
 const buyButton = document.getElementById("buy-button")
 const workButtonsDiv = document.getElementById("work-buttons")
-
-let price = 0
-let balance = 100
-let salary = 0
-let currentLoan = 0
-
-//laptop selection dingen
 const laptopSelection = document.getElementById("laptop-select")
 const laptopSpecs = document.getElementById("specs-list")
-let laptops = []
-
-//api dingen
 const API_URL = "https://hickory-quilled-actress.glitch.me/computers/"
 const laptopNameText = document.getElementById("laptop-name")
 const laptopDescription = document.getElementById("laptop-description")
 const imageElement = document.getElementById("laptop-img")
 
+let price = 0
+// bank.setBalance(0)
+//let salary = 0
+//let currentLoan = 0
+let loanAmount = 0
+let laptops = []
+
+
+
+
 //Change the text for banker accordingly
-balanceText.innerText = "Balance: " + formatNumber(balance)
-loanText.innerText = " "
-
-//Change the text for Work accordingly
-workText.innerText = "Pay: " + formatNumber(salary)
-
-//Remove repay button untill we have a loan
+bank.displayBalance()
+// workText.innerText = "Pay: " + utils.formatNumber(salary)
+work.displaySalary()
 repayButton.remove()
 
-//IN UTIL STOPPEN
-function formatNumber(number) {
-    return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number)
-}
-
-//Functions
-function getLoan() {
-    loanAmount = window.prompt("How much?")
-
-    if (validLoan() == true) {
-        currentLoan = +currentLoan + +loanAmount
-        balance = +balance + +loanAmount//using unary operator + to convert to number
-        balanceText.innerText = "Balance: " + formatNumber(balance)
-        loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
-        bankerButton.remove()
-        workButtonsDiv.appendChild(repayButton)
-    }
-}
-
-
-
-function validLoan() {
-    if (currentLoan > 0) {
-        console.log("you already have a loan")
-        return false
-    }
-    else if (Math.sign(loanAmount) !== 1 | isNaN(loanAmount)) {
-        loanText.innerText = "Please input a valid positive number"
-        return false
-    } else if (loanAmount > balance * 2) {
-        loanText.innerText = "You can't withdraw this much"
-        console.log("too much")
-        console.log(loanAmount);
-        return false
-    } else {
-        return true
-    }
-}
 
 function getSalary() {
     salary = +salary + 100
-    workText.innerText = "Pay: " + formatNumber(salary)
+    workText.innerText = "Pay: " + utils.formatNumber(salary)
 }
 
 function depositSalary() {
@@ -90,24 +52,24 @@ function depositSalary() {
         //check if we are over depositing
         if (+currentLoan - (0.1 * +salary) < 0) {
             console.log((+currentLoan - (0.1 * +salary)))
-            balance = +balance + +salary - +currentLoan
+            bank.balance = +bank.balance + +salary - +currentLoan
             currentLoan = 0
             //otherwise normal depoist
         } else {
-            balance = +balance + (0.9 * +salary)
+            bank.balance = +bank.balance + (0.9 * +salary)
             currentLoan = +currentLoan - (0.1 * +salary)
         }
         //if no loan, just deposit
     } else {
-        balance = +balance + +salary
+        bank.balance = +bank.balance + +salary
     }
     //salary = 0 again after depositing
     salary = 0
 
     //render page
-    workText.innerText = "Pay: " + formatNumber(salary)
-    balanceText.innerText = "Balance: " + formatNumber(balance)
-    loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
+    workText.innerText = "Pay: " + utils.formatNumber(salary)
+    bank.displayBalance()
+    loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
     //render for the loan button
     checkLoan()
 }
@@ -134,15 +96,15 @@ function repayLoan() {
 
     if (extraMoney > 1) {
         currentLoan = 0
-        balance += extraMoney
+        bank.setBalance = balance.bank + extraMoney
     }
     else {
         currentLoan = +currentLoan - +salary
     }
     salary = 0
-    workText.innerText = "Pay: " + formatNumber(salary)
-    balanceText.innerText = "Balance: " + formatNumber(balance)
-    loanText.innerText = "Currently have " + formatNumber(currentLoan) + " outstanding."
+    workText.innerText = "Pay: " + utils.formatNumber(salary)
+    bank.displayBalance()
+    loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
     checkLoan()
 }
 
@@ -203,13 +165,13 @@ function renderLaptop(userData) {
     console.log(newUrl)
     imageElement.src = newUrl
     price = userData.price
-    priceText.innerText = formatNumber(userData.price)
+    priceText.innerText = utils.formatNumber(userData.price)
 }
 
 //HANDLE CHANGES IN SELECT
 const handleSelectionChange = e => {
     const selectedLaptop = laptops[e.target.selectedIndex]
-    priceText.innerText = formatNumber(selectedLaptop.price)
+    priceText.innerText = utils.formatNumber(selectedLaptop.price)
     price = selectedLaptop.price
 
     //clear the ul first
@@ -231,7 +193,7 @@ const handleSelectionChange = e => {
 function buyLaptop() {
     if (balance >= price) {
         balance -= price
-        balanceText.innerText = "Balance: " + formatNumber(balance)
+        balanceText.innerText = "Balance: " + utils.formatNumber(balance)
         document.getElementById('alert-success').classList.remove('hide')
         document.getElementById("dismiss-button2").classList.remove('hide')
         buyButton.classList.add('hide')
@@ -253,10 +215,10 @@ function addHide() {
 
 //Event Handlers
 laptopSelection.addEventListener("change", handleSelectionChange)
-bankerButton.addEventListener("click", getLoan)
-workButton.addEventListener("click", getSalary)
-storeButton.addEventListener("click", depositSalary)
-repayButton.addEventListener("click", repayLoan)
+bankerButton.addEventListener("click", bank.getLoan)
+workButton.addEventListener("click", work.getSalary)
+storeButton.addEventListener("click", work.depositSalary)
+repayButton.addEventListener("click", work.repayLoan)
 buyButton.addEventListener("click", buyLaptop)
 
 document.getElementById("dismiss-button").addEventListener("click", addHide)
