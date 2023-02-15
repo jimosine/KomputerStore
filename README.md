@@ -20,9 +20,9 @@ and open the index.html
 
 • Visual Studio Code
 
-• HTMl
+• HTML
 
-• Bootstrap
+• Bootstrap & CSS
 
 • Javascript
 
