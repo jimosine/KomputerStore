@@ -1,6 +1,6 @@
-# KomputerStore
+# Komputer Store: Dynamic Webpage using JS
 
-The project follows the guidelines provided in the Noroff assignment and includes the minimum requirements as described in the Appendix A-B.
+The project follows the guidelines provided in the first Noroff assignment for the frond-end and includes the minimum requirements as described in the Appendix A-B.
 The goal was to build a dynamic webpage using “vanilla” JavaScript, where users can buy computers using data from an API (https://hickory-quilled-actress.glitch.me/computers). To obtain enough funds for said laptops, users can either work or take out a loan from the bank.
 
 
@@ -10,7 +10,7 @@ The goal was to build a dynamic webpage using “vanilla” JavaScript, where us
 ## Getting Started
 Clone the repository:
 `git clone https://github.com/jimosine/KomputerStore.git`
-and open the index.html
+and deploy the project with a live server.
 
 
 
