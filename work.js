@@ -32,19 +32,15 @@ function depositSalary() {
         //check if we are over depositing
         if (+currentLoan - (0.1 * +salary) < 0) {
             bank.setBalance(+balance + +salary - +currentLoan)
-            //balance = +balance + +salary - +currentLoan
             bank.setLoan(0)
             //otherwise normal depoist
         } else {
             bank.setBalance(+balance + (0.9 * +salary))
-            //balance = +balance + (0.9 * +salary)
             bank.setLoan(+currentLoan - (0.1 * +salary))
-            //currentLoan = +currentLoan - (0.1 * +salary)
         }
         //if no loan, just deposit
     } else {
         bank.setBalance(+balance + +salary)
-        //balance = +balance + +salary
     }
     //salary = 0 again after depositing
     salary = 0
@@ -76,19 +72,15 @@ function repayLoan() {
     //get what you store as balance
     if (+salary - +currentLoan > 0) {
         bank.setBalance(balance + salary - currentLoan)
-        //balance += +salary - +currentLoan
         bank.setLoan(0)
-        //currentLoan = 0
     }
     else {
-        //currentLoan = +currentLoan - +salary
         bank.setLoan(currentLoan - salary)
     }
     salary = 0
     displaySalary()
     bank.displayBalance()
     bank.displayLoan()
-    //loanText.innerText = "Currently have " + utils.formatNumber(bank.returnLoanAmount()) + " outstanding."
     checkLoan()
 }
 
@@ -97,7 +89,7 @@ const displaySalary = () => {
     workText.innerText = "Pay: " + utils.formatNumber(salary)
 }
 
-
+//FUNCTIONS TO EXPORT
 const work = {
     getSalary,
     depositSalary,

@@ -1,32 +1,23 @@
-const url = "https://hickory-quilled-actress.glitch.me/computers/"
-let laptops = []
+//HTML ELEMENTS
+const buyButton = document.getElementById("buy-button")
 
 //FORMATS A NUMERIC VALUE TO EURO FORMAT
 function formatNumber(number) {
     return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(number)
 }
 
-function getLaptops() {
-    fetch(url)
-        .then(response => {
-            return response.json()
-        })
-        .then(json => {
-            return json
-        })
-        .then(data => {
-            laptops = data
-            console.log(data);
-            return data
-        })
+//Function that hides the alerts when they are dismissed and renders the buyButton back in
+function addHide() {
+    buyButton.classList.remove('hide')
+    document.getElementById('alert-success').classList.add('hide')
+    document.getElementById('alert-fail').classList.add('hide')
 
 }
 
-
-
+//FUNCTIONS TO EXPORT
 const utils = {
     formatNumber,
-    getLaptops
+    addHide
 }
 
 export default utils
