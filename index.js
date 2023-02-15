@@ -1,8 +1,9 @@
 //IMPORTS
 import utils from "./utils.js"
+import bank from "./bank.js"
+// import work from "./work.js"
 
 //Get HTML elements 
-const balanceText = document.getElementById("balance-text")
 const priceText = document.getElementById("price-text")
 const workText = document.getElementById("work-text")
 const loanText = document.getElementById("loan-text")
@@ -22,14 +23,11 @@ const bankerDiv = document.getElementById("banker-div")
 
 //Set variables
 let price = 0
-let balance = 100
 let salary = 0
-let currentLoan = 0
 let laptops = []
-let loanAmount = 0
 
 //Change the text for banker accordingly
-balanceText.innerText = "Balance: " + utils.formatNumber(balance)
+bank.displayBalance()
 loanText.innerText = " "
 
 //Change the text for Work accordingly
@@ -38,42 +36,6 @@ workText.innerText = "Pay: " + utils.formatNumber(salary)
 //Remove repay button untill we have a loan
 repayButton.remove()
 
-
-//Function to get a loan. Asks users to put in any value (which is later checked for validity)
-//If the loan is valid, increase the loan with the specified value, as well as the current bank balance.
-//Renders the page accordingly
-function getLoan() {
-    loanAmount = window.prompt("How much?")
-
-    if (validLoan() == true) {
-        currentLoan = +currentLoan + +loanAmount //using unary operator + to convert to number
-        balance = +balance + +loanAmount
-        balanceText.innerText = "Balance: " + utils.formatNumber(balance)
-        loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
-        bankerButton.remove()
-        workButtonsDiv.appendChild(repayButton)
-    }
-}
-
-//Function to check if the user input equals a valid loan amount
-//A user can not take out a loan if one is outstanding
-//A loan has to be a positive number
-//A loan can not be twice as large as the user's current bank balance
-function validLoan() {
-    if (currentLoan > 0) {
-        console.log("you already have a loan")
-        return false
-    }
-    else if (Math.sign(loanAmount) !== 1 | isNaN(loanAmount)) {
-        loanText.innerText = "Please input a valid positive number"
-        return false
-    } else if (loanAmount > balance * 2) {
-        loanText.innerText = "You can't withdraw this much"
-        return false
-    } else {
-        return true
-    }
-}
 
 //Function to increase a user's salary by 100 and rerenders the salary 
 //Runs when "work" button is clicked
@@ -89,34 +51,40 @@ function getSalary() {
 //Stores the rest of the 90% in the bank balance, or 100% if no loan is oustanding.
 //Resets the salary to 0, and rerenders the corresponding texts
 function depositSalary() {
+    let currentLoan = bank.returnLoanAmount()
+    let balance = bank.getBalance()
     if (currentLoan > 0) {
         //check if we are over depositing
         if (+currentLoan - (0.1 * +salary) < 0) {
-            console.log((+currentLoan - (0.1 * +salary)))
-            balance = +balance + +salary - +currentLoan
-            currentLoan = 0
+            bank.setBalance(+balance + +salary - +currentLoan)
+            //balance = +balance + +salary - +currentLoan
+            bank.setLoan(0)
             //otherwise normal depoist
         } else {
-            balance = +balance + (0.9 * +salary)
-            currentLoan = +currentLoan - (0.1 * +salary)
+            bank.setBalance(+balance + (0.9 * +salary))
+            //balance = +balance + (0.9 * +salary)
+            bank.setLoan(+currentLoan - (0.1 * +salary))
+            //currentLoan = +currentLoan - (0.1 * +salary)
         }
         //if no loan, just deposit
     } else {
-        balance = +balance + +salary
+        bank.setBalance(+balance + +salary)
+        //balance = +balance + +salary
     }
     //salary = 0 again after depositing
     salary = 0
 
     //render page
     workText.innerText = "Pay: " + utils.formatNumber(salary)
-    balanceText.innerText = "Balance: " + utils.formatNumber(balance)
-    loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
+    bank.displayBalance()
+    loanText.innerText = "Currently have " + utils.formatNumber(bank.returnLoanAmount()) + " outstanding."
     //render for the loan button & repay button
     checkLoan()
 }
 
 //Function that checks if a loan is payed off and renders the page accordingly
 function checkLoan() {
+    let currentLoan = bank.returnLoanAmount()
     if (currentLoan <= 0) {
         loanText.innerText = " "
         bankerDiv.appendChild(bankerButton)
@@ -128,18 +96,23 @@ function checkLoan() {
 //If a user is overpaying on the loan, store the rest of the money in the bank balance
 //Reset the salary, render the page accordingly
 function repayLoan() {
+    let currentLoan = bank.returnLoanAmount()
+    let balance = bank.getBalance()
     //get what you store as balance
     if (+salary - +currentLoan > 0) {
-        balance += +salary - +currentLoan
-        currentLoan = 0
+        bank.setBalance(balance + salary - currentLoan)
+        //balance += +salary - +currentLoan
+        bank.setLoan(0)
+        //currentLoan = 0
     }
     else {
-        currentLoan = +currentLoan - +salary
+        //currentLoan = +currentLoan - +salary
+        bank.setLoan(currentLoan - salary)
     }
     salary = 0
     workText.innerText = "Pay: " + utils.formatNumber(salary)
-    balanceText.innerText = "Balance: " + utils.formatNumber(balance)
-    loanText.innerText = "Currently have " + utils.formatNumber(currentLoan) + " outstanding."
+    bank.displayBalance()
+    loanText.innerText = "Currently have " + utils.formatNumber(bank.returnLoanAmount()) + " outstanding."
     checkLoan()
 }
 
@@ -224,9 +197,10 @@ const handleSelectionChange = e => {
 //If there are not enough funds, an alert pops up informing the user of this
 //If there are enough funds, subtract the price from the balance and rerender
 function buyLaptop() {
+    let balance = bank.getBalance()
     if (balance >= price) {
-        balance -= price
-        balanceText.innerText = "Balance: " + utils.formatNumber(balance)
+        bank.setBalance(balance - price)
+        bank.displayBalance()
         document.getElementById('alert-success').classList.remove('hide')
         buyButton.classList.add('hide')
     }
@@ -246,7 +220,7 @@ function addHide() {
 
 //Event Handlers
 laptopSelection.addEventListener("change", handleSelectionChange)
-bankerButton.addEventListener("click", getLoan)
+bankerButton.addEventListener("click", bank.getLoan)
 workButton.addEventListener("click", getSalary)
 storeButton.addEventListener("click", depositSalary)
 repayButton.addEventListener("click", repayLoan)
