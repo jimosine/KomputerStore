@@ -29,7 +29,7 @@
                 <h1>Joe Banker</h1>
                 <p id="balance-text"> Balance: not working </p>
                 <p id="loan-text"> </p>
-                <div id="test">
+                <div id="banker-div">
                     <button id="banker-button" type="button" class="btn btn-primary">Get a loan</button>
                 </div>
 
@@ -76,13 +76,13 @@
             <div class="col-lg">
                 <h2 id="price-text">Price not working</h2>
                 <button id="buy-button" type="button" class="btn btn-primary">BUY NOW</button>
-                <div id="alertId" class="alert alert-danger alert-dismissible hide">
-                    <button id="dismiss-button" type="button" class="close" aria-label="close">&times;</button>
+                <div id="alert-fail" class="alert alert-danger alert-dismissible hide">
+                    <button id="dismiss-button-fail" type="button" class="close" aria-label="close">&times;</button>
                     <strong>Not enough funds!</strong> Couldn't purchase laptop as you currently do not have enough
                     funds
                 </div>
                 <div id="alert-success" class="alert alert-success alert-dismissible hide">
-                    <button id="dismiss-button2" type="button" class="close" aria-label="close">&times;</button>
+                    <button id="dismiss-button-success" type="button" class="close" aria-label="close">&times;</button>
                     <strong>Success!</strong> You are now the proud owner of a new computer!
                 </div>
             </div>
@@ -93,7 +93,7 @@
 
 
     <!-- Optional JavaScript -->
-    <script src='index.js'></script>
+    <script src='index.js' type="module"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
